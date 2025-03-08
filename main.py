@@ -6,6 +6,7 @@ import random
 import re
 import sys
 import time
+import pytz
 
 import requests
 
@@ -151,7 +152,7 @@ def login(user, password):
         }
     else:
         data2 = {
-            "allow_registration=": "false",
+            "allow_registration": "false",
             "app_name": "com.xiaomi.hm.health",
             "app_version": "6.3.5",
             "code": f"{code}",
@@ -220,10 +221,12 @@ def main(_user, _passwd, min_1, max_1):
 
 # 获取时间戳
 def get_time():
-    url = 'http://worldtimeapi.org/api/timezone/Asia/Shanghai'
-    response = requests.get(url, headers=headers).json()
-    t = str(response['unixtime'])+'000'
-    return t
+    def get_time():
+        utc_now = datetime.datetime.utcnow()
+        beijing_tz = pytz.timezone('Asia/Shanghai')
+        beijing_now = utc_now.replace(tzinfo=pytz.utc).astimezone(beijing_tz)
+        t = int(beijing_now.timestamp() * 1000)
+        return t
 
 
 # 获取app_token
